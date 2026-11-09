@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm Công Tác Sử Dụng Vật Tư Quân Y</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 24px;
+        }
+        .subtitle {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .score-board {
+            position: sticky;
+            top: 10px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .score-board span {
+            color: #f1c40f;
+            font-size: 22px;
+        }
+        .question-card {
+            background: #f9f9f9;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            background: #fff;
+            border: 2px solid #bdc3c7;
+            padding: 12px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        .option:hover {
+            background: #ecf0f1;
+            border-color: #95a5a6;
+        }
+        /* CSS cho trạng thái đúng/sai */
+        .option.correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        .option.incorrect {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+            pointer-events: none;
+        }
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .btn-finish {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+        .btn-finish:hover {
+            background-color: #c0392b;
+        }
+        .section-title {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Ngân Hàng Câu Hỏi Trắc Nghiệm</h1>
+    <div class="subtitle">Môn: Công tác sử dụng vật tư quân y (Bài giảng số 6)</div>
+
+    <div class="score-board">
+        Điểm của bạn: <span id="score">0</span> / <span id="total-questions">80</span>
+    </div>
+
+    <div id="quiz-container">
+        <!-- Các câu hỏi sẽ được render bằng JavaScript -->
+    </div>
+
+    <div class="footer">
+        <button class="btn-finish" onclick="showFinalResult()">Xem Kết Quả Cuối Bài</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu 80 câu hỏi (Đáp án đúng được lưu ở trường 'correct' - tính từ 0)
+    const questionsData = [
+        // PHẦN 1
+        { section: "PHẦN 1: QUY ĐỊNH SỬ DỤNG THUỐC, BÔNG BĂNG, HÓA CHẤT" },
+        { q: "Câu 1: Theo quy định trong công tác sử dụng vật tư quân y: Phương châm hiện nay về việc sử dụng thuốc đó là hướng tới việc sử dụng thuốc...", options: ["A. hợp lý, an toàn, kinh tế", "B. hợp lý, hiệu quả, kinh tế", "C. hợp lý, tiện lợi, kinh tế", "D. hợp lý, an toàn, hiệu quả"], correct: 3 },
+        { q: "Câu 2: Các tuyến quân y sử dụng thuốc theo danh mục thuốc thống nhất được quy định cho từng tuyến và theo chỉ đạo của .......", options: ["A. Bộ Y tế", "B. Cục Quân y", "C. Chủ nhiệm quân y đơn vị", "D. Bệnh viện tuyến trên"], correct: 1 },
+        { q: "Câu 3: Thực hiện sử dụng thuốc ......, không lạm dụng thuốc, các cá nhân dùng thuốc phải theo hướng dẫn của cán bộ chuyên môn có thẩm quyền.", options: ["A. hợp lý, an toàn, kinh tế", "B. hợp lý, hiệu quả, kinh tế", "C. hợp lý, an toàn, hiệu quả", "D. hợp lý, tiện lợi, hiệu quả"], correct: 2 },
+        { q: "Câu 4: Việc sử dụng thuốc phải được ...... kịp thời vào sổ sách theo dõi sử dụng quy định cho từng tuyến.", options: ["A. kiểm tra, giám sát", "B. thống kê, ghi chép", "C. đánh giá, tổng hợp", "D. báo cáo, xin ý kiến"], correct: 1 },
+        { q: "Câu 5: Các cơ sở quân y phải tổng hợp số lượng và giá trị thuốc, hóa chất, vật tư tiêu hao đã sử dụng của đơn vị theo định kỳ nào?", options: ["A. Hàng ngày, hàng tuần", "B. Hàng tuần, hàng tháng", "C. Hàng tháng, hàng quý và hàng năm", "D. Hàng quý, hàng năm"], correct: 2 },
+        { q: "Câu 6: Phải theo dõi ....... của thuốc, hoá chất và các loại vật tư y tế có quy định thời hạn sử dụng, cả ở kho và cả ở trong tủ trực, trong túi thuốc cấp cứu...", options: ["A. giá thành", "B. hạn dùng", "C. số lô sản xuất", "D. nguồn gốc"], correct: 1 },
+        { q: "Câu 7: Không dùng thuốc ......, thuốc không đảm bảo chất lượng.", options: ["A. sắp hết hạn", "B. của địch", "C. hết hạn", "D. đã mở nắp"], correct: 2 },
+        { q: "Câu 8: Các thuốc phải kiểm soát đặc biệt (thuốc gây nghiện, thuốc hướng tâm thần...) phải được sử dụng theo đúng quy định của ......, hướng dẫn của Cục Quân y.", options: ["A. Cục Quân y", "B. Bộ Y tế", "C. Chính phủ", "D. Bộ Quốc phòng"], correct: 1 },
+        { q: "Câu 9: Cán bộ, nhân viên tiếp tế quân y các cấp có trách nhiệm ...... sử dụng, bảo quản thuốc cho toàn đơn vị.", options: ["A. trực tiếp", "B. kiểm tra", "C. hướng dẫn", "D. giám sát"], correct: 2 },
+        { q: "Câu 10: Theo quy định trong công tác sử dụng vật tư quân y: Lượng vật tư quân y dùng để luân lưu cơ số quân y đảm bảo sẵn sàng chiến đấu có thể được lấy từ các nguồn nào sau đây?\n(1) hiện vật do quân y cấp trên cấp sau khi đơn vị nộp báo cáo không tự giải quyết được\n(2) mua bằng kinh phí đơn vị tự chi do quân y cấp trên cấp\n(3) nguồn trao đổi với y tế địa phương\n(4) vật tư quân y thường xuyên", options: ["A. (1), (2), (3)", "B. (1), (2), (3), (4)", "C. (1), (2), (4)", "D. (2), (3), (4)"], correct: 2 },
+        { q: "Câu 11: Lượng vật tư quân y dùng để luân lưu cơ số quân y đảm bảo sẵn sàng chiến đấu có thể lấy từ vật tư quân y ...... hoặc đơn vị mua bằng kinh phí tự chi.", options: ["A. dự trữ quốc gia", "B. thường xuyên", "C. của địch thu được", "D. viện trợ"], correct: 1 },
+        { q: "Câu 12: Trường hợp không tự giải quyết luân lưu được thì báo cáo lên ...... để được cung cấp vật tư quân y hoặc tạo điều kiện để đơn vị triển khai luân lưu theo quy định.", options: ["A. chỉ huy đơn vị", "B. cơ quan tài chính", "C. quân y cấp trên", "D. Bộ Y tế"], correct: 2 },
+        { q: "Câu 13: Trước khi cho dùng thuốc chiến lợi phẩm thu được của địch, phải thực hiện biện pháp gì để đảm bảo an toàn?", options: ["A. Kiểm tra, tìm hiểu nắm chắc tính năng, tác dụng, cách dùng", "B. Thử nghiệm trên động vật trước", "C. Hỏi ý kiến của toàn bộ nhân viên quân y", "D. Gửi lên tuyến trên xét nghiệm"], correct: 0 },
+        { q: "Câu 14: Việc sử dụng thuốc chiến lợi phẩm thu được của địch do ...... sư đoàn (hoặc trung đoàn, lữ đoàn độc lập) trở lên quyết định.", options: ["A. Chủ nhiệm quân y", "B. Chỉ huy trưởng", "C. Bác sĩ điều trị", "D. Dược sĩ"], correct: 0 },
+        
+        // PHẦN 2
+        { section: "PHẦN 2: QUY ĐỊNH SỬ DỤNG MÁY MÓC, TRANG THIẾT BỊ" },
+        { q: "Câu 15: Các đơn vị sau khi tiếp nhận máy, thiết bị, dụng cụ y tế phải nhanh chóng đưa vào ......, triển khai sử dụng phục vụ bộ đội và các đối tượng bệnh nhân khác.", options: ["A. kho bảo quản", "B. lắp đặt", "C. kiểm tra", "D. đăng ký"], correct: 1 },
+        { q: "Câu 16: Khi đưa thiết bị vào sử dụng phải ghi rõ ...... bắt đầu sử dụng và các nội dung quy định vào lý lịch máy.", options: ["A. ngày, tháng, năm", "B. giờ, ngày, tháng", "C. người, thời gian", "D. tên thiết bị, ngày"], correct: 0 },
+        { q: "Câu 17: Theo quy định trong công tác sử dụng vật tư quân y: Chỉ phân công sử dụng trang thiết bị kỹ thuật quân y cho những người đã được ......, đào tạo nắm vững kỹ thuật và thành thạo quy trình vận hành.", options: ["A. tập huấn", "B. huấn luyện", "C. hướng dẫn", "D. bồi dưỡng"], correct: 0 },
+        { q: "Câu 18: Phải có quy định sử dụng, quy định an toàn, quy trình vận hành máy cho người sử dụng và người bệnh. Những quy định này phải được viết rõ ràng thành bảng, treo ...... và ở nơi dễ thấy trong phòng đặt máy.", options: ["A. tại phòng họp", "B. tại kho thiết bị", "C. gần máy", "D. tại bảng tin"], correct: 2 },
+        { q: "Câu 19: Nhân viên tiếp tế quân y phải ...... cho chỉ huy quân y trong việc sắp xếp, bố trí thiết bị y tế trong đơn vị.", options: ["A. trực tiếp làm", "B. tham mưu", "C. báo cáo", "D. đề xuất kinh phí"], correct: 1 },
+        { q: "Câu 20: Tất cả các trang bị kỹ thuật khi đã thuộc phạm vi quản lý của ngành Quân y đều phải có ...... theo đúng mẫu và ghi chép đủ các nội dung.", options: ["A. sổ sách", "B. lý lịch", "C. biên bản", "D. hồ sơ tài chính"], correct: 1 },
+        { q: "Câu 21: Duy trì đều đặn việc bảo quản, bảo dưỡng theo quy định cho từng thiết bị. Việc bảo dưỡng định kỳ có thể được thực hiện bởi nhà sản xuất, nhà cung cấp, nhân viên kỹ thuật hoặc .......", options: ["A. cơ quan tài chính", "B. người sử dụng thiết bị", "C. chỉ huy đơn vị", "D. quân y cấp trên"], correct: 1 },
+        { q: "Câu 22: Việc thay đổi cấp chất lượng thiết bị đang sử dụng phải có ...... xác định rõ ràng tình trạng thực tế của thiết bị đó.", options: ["A. quyết định", "B. biên bản", "C. báo cáo", "D. đề nghị"], correct: 1 },
+        { q: "Câu 23: Biên bản thay đổi cấp chất lượng do hội đồng đánh giá chất lượng của đơn vị thành lập, bao gồm đại diện chỉ huy đơn vị, cơ quan quản lý trang bị kỹ thuật, cơ quan tài chính và .......", options: ["A. đại diện bệnh nhân", "B. đơn vị sử dụng", "C. nhà cung cấp", "D. quân y cấp trên"], correct: 1 },
+        { q: "Câu 24: Biên bản thay đổi cấp chất lượng được lưu cùng với .......", options: ["A. hồ sơ tài chính", "B. lý lịch máy", "C. sổ khám bệnh", "D. biên bản bàn giao"], correct: 1 },
+
+        // PHẦN 3
+        { section: "PHẦN 3: BÁO CÁO SỬ DỤNG VẬT TƯ QUÂN Y" },
+        { q: "Câu 25: Báo cáo sử dụng vật tư quân y nhằm giúp các tuyến quân y tự đánh giá được ...... của mình.", options: ["A. số lượng vật tư", "B. chất lượng công tác", "C. năng lực cán bộ", "D. hiệu quả kinh tế"], correct: 1 },
+        { q: "Câu 26: Báo cáo phải phản ánh ...... tình hình công tác tiếp tế quân y của các đơn vị.", options: ["A. khách quan", "B. trung thực", "C. đầy đủ", "D. kịp thời"], correct: 1 },
+        { q: "Câu 27: Yêu cầu đối với báo cáo là số liệu phải chính xác, đủ nội dung, đúng mẫu biểu, đúng .......", options: ["A. quy trình", "B. thời gian", "C. thẩm quyền", "D. định dạng"], correct: 1 },
+        { q: "Câu 28: Báo cáo tổng kiểm kê hàng năm bằng văn bản và số liệu cụ thể. Các tuyến quân y đều phải thực hiện .......", options: ["A. báo cáo miệng", "B. kiểm kê", "C. thanh lý", "D. mua sắm"], correct: 1 },
+        { q: "Câu 29: Báo cáo về từng vấn đề, từng công việc cụ thể như báo cáo về phản ứng có hại của thuốc (ADR -- ......).", options: ["A. Adverse Drug Reaction", "B. Adverse Drug Response", "C. Adverse Disease Reaction", "D. Acute Drug Reaction"], correct: 0 },
+        { q: "Câu 30: Báo cáo hoạt động 6 tháng, hàng năm bao gồm toàn bộ các hoạt động tiếp tế quân y của đơn vị, đánh giá tình hình chấp hành các ......, kết quả công tác kèm theo số liệu tổng kết thực tế.", options: ["A. quy định pháp luật", "B. chế độ nghiệp vụ", "C. chỉ thị năm", "D. kế hoạch"], correct: 1 },
+        { q: "Câu 31: Báo cáo ...... được thực hiện khi đơn vị có tình hình đột xuất xảy ra hoặc theo yêu cầu cấp trên như đảm bảo cho các tình huống chiến đấu, phòng chống dịch bệnh...", options: ["A. thường kỳ", "B. định kỳ", "C. bất thường", "D. tổng kết"], correct: 2 },
+        { q: "Câu 32: Sau khi nhận được báo cáo bất thường, cơ quan quân y cấp trên phải kịp thời xem xét giải quyết hoặc ...... những nội dung đơn vị kiến nghị, đề xuất.", options: ["A. phê duyệt", "B. phúc đáp", "C. bác bỏ", "D. lưu trữ"], correct: 1 },
+        { q: "Câu 33: Tại tuyến quân y đại đội, tiểu đoàn, Sổ theo dõi khám bệnh, phát thuốc, điều trị hàng ngày phải được ...... xác nhận.", options: ["A. Quân y cấp trên", "B. Chỉ huy đơn vị", "C. Bác sĩ điều trị", "D. Dược sĩ"], correct: 1 },
+        { q: "Câu 34: Đến ngày 25 hàng tháng, nhân viên quân y gạch ngang dưới ngày này để ......, tổng hợp số liệu thuốc sử dụng trong tháng.", options: ["A. báo cáo", "B. kết sổ", "C. thanh lý", "D. kiểm tra"], correct: 1 },
+        { q: "Câu 35: Theo quy định trong công tác sử dụng vật tư quân y: Tại tuyến quân y đại đội, tiểu đoàn, số liệu tổng hợp thuốc sử dụng trong tháng vừa dùng để báo cáo quyết toán với ......, vừa dùng làm số liệu ...... công khai trước toàn thể quân nhân đơn vị.", options: ["A. tài chính đơn vị / dược chính", "B. quân y cấp trên / dược chính", "C. tài chính đơn vị / báo cáo", "D. quân y cấp trên / báo cáo"], correct: 1 },
+        { q: "Câu 36: Sổ thống kê sử dụng thuốc hàng tháng của tiểu đoàn, đại đội được dùng trong các cuộc họp để nhân viên quân y báo cáo ...... trước tiểu đoàn hoặc đại đội.", options: ["A. nội bộ", "B. công khai", "C. định kỳ", "D. đột xuất"], correct: 1 },
+        { q: "Câu 37: Tuyến quân y trung đoàn, sư đoàn sử dụng mẫu biểu \"Phiếu lĩnh thuốc gây nghiện và diazepam tiêm cho bệnh nhân điều trị tại ......\".", options: ["A. bệnh viện", "B. bệnh xá", "C. trạm xá", "D. quân y đại đội"], correct: 1 },
+        { q: "Câu 38: Mẫu biểu \"Tờ thống kê cấp phát, sử dụng thuốc hàng ngày, tháng dùng cho ......\" áp dụng cho tuyến trung đoàn, sư đoàn.", options: ["A. bệnh viện", "B. bệnh xá", "C. nhà thuốc", "D. khoa dược"], correct: 1 },
+        { q: "Câu 39: Theo quy định trong công tác sử dụng vật tư quân y: Tuyến quân y trung đoàn, sư đoàn và tương đương có các loại mẫu biểu thống kê sử dụng vật tư quân y nào sau đây?", options: ["A. Phiếu lĩnh thuốc cho bệnh nhân ngoại trú.", "B. Báo cáo kiểm kê hàng năm", "C. Phiếu cấp thuốc gây nghiện", "D. Cả 3 đáp án còn lại đều đúng."], correct: 3 },
+
+        // PHẦN 4
+        { section: "PHẦN 4: HOẠT ĐỘNG THÔNG TIN VÀ TƯ VẤN SỬ DỤNG THUỐC" },
+        { q: "Câu 40: Tại các đơn vị tuyến trung đoàn, sư đoàn, hoạt động thông tin và tư vấn sử dụng thuốc do ...... phụ trách.", options: ["A. bác sĩ", "B. dược sỹ", "C. y tá", "D. chủ nhiệm quân y"], correct: 1 },
+        { q: "Câu 41: Tổ chức đơn vị thông tin thuốc để phổ biến, theo dõi, ...... sử dụng thuốc hợp lý, an toàn và hiệu quả.", options: ["A. kiểm tra", "B. tuyên truyền", "C. giám sát", "D. đánh giá"], correct: 1 },
+        { q: "Câu 42: Nội dung thông tin về thuốc bao gồm tên thuốc, hoạt chất, tác dụng dược lý, liều dùng, liều độc, quá liều; ...... cho các đối tượng người bệnh đặc biệt.", options: ["A. cách dùng", "B. hiệu chỉnh liều", "C. chống chỉ định", "D. tương tác thuốc"], correct: 1 },
+        { q: "Câu 43: Việc cung cấp thông tin về thuốc phải tuân thủ các quy định của Nhà nước và của .......", options: ["A. Cục Quân y", "B. Bộ Y tế", "C. Bộ Quốc phòng", "D. Chính phủ"], correct: 1 },
+        { q: "Câu 44: Tư vấn cho ...... đơn vị trong việc lựa chọn thuốc đưa vào danh mục thuốc dùng tại đơn vị.", options: ["A. Chủ nhiệm quân y", "B. Chỉ huy trưởng", "C. Trưởng khoa Dược", "D. Bác sĩ điều trị"], correct: 0 },
+        { q: "Câu 45: Tham gia công tác ......: Cán bộ dược chịu trách nhiệm theo dõi, tập hợp các báo cáo về tác dụng không mong muốn của thuốc trong đơn vị.", options: ["A. quản lý dược", "B. cảnh giác dược", "C. thông tin thuốc", "D. dược lâm sàng"], correct: 1 },
+
+        // PHẦN 5
+        { section: "PHẦN 5: HƯỚNG DẪN SỬ DỤNG THUỐC HỢP LÝ, AN TOÀN, HIỆU QUẢ" },
+        { q: "Câu 46: Theo quy định trong công tác sử dụng vật tư quân y: Hướng dẫn sử dụng thuốc an toàn gồm những nội dung nào sau đây?", options: ["A. Thuốc sử dụng có tác dụng điều trị triệt để nhất", "B. Thuốc sử dụng được cân nhắc kỹ lưỡng nhất", "C. Thuốc sử dụng có cách dùng thuận tiện nhất", "D. Cả 3 đáp án còn lại đều đúng (Ghi chú: Theo giáo trình, sử dụng an toàn gồm chất lượng tốt nhất, cân nhắc kỹ nhất, ít tác dụng phụ nhất, hướng dẫn đầy đủ nhất, theo dõi kỹ nhất)"], correct: 3 },
+        { q: "Câu 47: Sử dụng thuốc an toàn là sử dụng thuốc có ...... đảm bảo nhất.", options: ["A. nguồn gốc", "B. chất lượng", "C. giá thành", "D. số lượng"], correct: 1 },
+        { q: "Câu 48: Sử dụng thuốc an toàn là thuốc dùng được ...... kỹ lưỡng nhất.", options: ["A. cân nhắc", "B. kiểm tra", "C. theo dõi", "D. hướng dẫn"], correct: 0 },
+        { q: "Câu 49: Sử dụng thuốc an toàn là thuốc có ít tác dụng phụ, ít ...... nhất.", options: ["A. độc tính", "B. phản ứng có hại", "C. tương tác", "D. tác dụng không mong muốn"], correct: 3 },
+        { q: "Câu 50: Sử dụng thuốc hiệu quả là hiệu quả điều trị cao (khả năng và ...... khỏi bệnh cao).", options: ["A. thời gian", "B. tỷ lệ", "C. chi phí", "D. chất lượng"], correct: 1 },
+        { q: "Câu 51: Sử dụng thuốc hiệu quả về mặt kinh tế là thuốc có giá thành hợp lý, ...... đặt sau lợi ích của người bệnh.", options: ["A. chi phí", "B. lợi nhuận", "C. doanh thu", "D. tiền lương"], correct: 1 },
+        { q: "Câu 52: Theo quy định trong công tác sử dụng vật tư quân y: Nội dung nào sau đây KHÔNG nằm trong những điều bác sĩ kê đơn cần làm?", options: ["A. Tránh kê quá nhiều thuốc trong một đơn", "B. Kê thuốc có hiệu quả, an toàn và tiết kiệm nhất", "C. Dùng Corticoid chống dị ứng để triệu chứng hết nhanh", "D. Không nên lạm dụng vitamin"], correct: 2 },
+        { q: "Câu 53: Bác sĩ kê đơn dựa trên nền tảng ......, lương tâm nghề nghiệp của mình mà giúp đỡ người bệnh những thông tin chính xác về sức khoẻ và thuốc cần dùng.", options: ["A. kiến thức", "B. kinh nghiệm", "C. đạo đức", "D. chuyên môn"], correct: 2 },
+        { q: "Câu 54: Không nên kê nhiều thuốc cho một đơn điều trị, hạn chế thuốc .......", options: ["A. dạng tiêm", "B. đa thành phần", "C. kháng sinh", "D. corticoid"], correct: 1 },
+        { q: "Câu 55: Nên kê đơn thuốc theo tên gốc hoặc viết kèm ...... của thuốc.", options: ["A. tên thương mại", "B. tên gốc", "C. công dụng", "D. liều dùng"], correct: 1 },
+        { q: "Câu 56: Không nên kê thuốc ...... khi chưa thật cần thiết.", options: ["A. uống", "B. bôi ngoài", "C. tiêm", "D. đặt"], correct: 2 },
+        { q: "Câu 57: Không lạm dụng nhóm thuốc ...... chống dị ứng để khỏi triệu chứng bệnh nhanh.", options: ["A. kháng sinh", "B. giảm đau", "C. corticoid", "D. vitamin"], correct: 2 },
+        { q: "Câu 58: Cần hướng dẫn kỹ cách dùng thuốc cho người bệnh: Uống thuốc nào? Uống ......? Uống với gì?", options: ["A. bao nhiêu", "B. như thế nào", "C. lúc nào", "D. ở đâu"], correct: 2 },
+        { q: "Câu 59: Phối hợp tốt với ...... để có những thông tin đầy đủ cho việc quyết định chọn thuốc.", options: ["A. điều dưỡng", "B. dược sĩ", "C. bác sĩ trưởng", "D. bệnh nhân"], correct: 1 },
+        { q: "Câu 60: Liên hệ với các ...... để có những thông tin thuốc một cách khách quan, chính xác, cập nhật.", options: ["A. trung tâm thông tin thuốc", "B. công ty dược", "C. bệnh viện tuyến trên", "D. cơ quan quản lý"], correct: 0 },
+        { q: "Câu 61: Có biện pháp giúp đỡ ...... bị bệnh gặp khó khăn.", options: ["A. người già", "B. trẻ em", "C. người nghèo", "D. bộ đội"], correct: 2 },
+        { q: "Câu 62: Tích cực tự học và đòi hỏi tái đào tạo, ...... để nâng cao trình độ chuyên môn.", options: ["A. đào tạo lại", "B. đào tạo liên tục", "C. bồi dưỡng ngắn hạn", "D. tập huấn"], correct: 1 },
+
+        // PHẦN 6
+        { section: "PHẦN 6: CÁC CHỈ TIÊU ĐÁNH GIÁ NHANH" },
+        { q: "Câu 63: Chỉ tiêu kê đơn bao gồm: Số thuốc ...... trong một đơn thuốc.", options: ["A. tối đa", "B. tối thiểu", "C. trung bình", "D. tổng số"], correct: 2 },
+        { q: "Câu 64: Chỉ tiêu kê đơn: Tỷ lệ % số thuốc kê đơn theo ...... (International Nonproprietary Name - Generic Name).", options: ["A. tên thương mại", "B. tên gốc", "C. tên hóa học", "D. tên viết tắt"], correct: 1 },
+        { q: "Câu 65: Chỉ tiêu chăm sóc bệnh nhân: Thời gian trung bình ...... khám bệnh (phút).", options: ["A. một ca", "B. một ngày", "C. 1 lần", "D. cả đợt"], correct: 2 },
+        { q: "Câu 66: Chỉ tiêu chăm sóc bệnh nhân: Tỷ lệ % thuốc thực tế đã giao so với ...... trong đơn.", options: ["A. số thuốc dự trù", "B. số thuốc kê", "C. số thuốc tồn", "D. số thuốc mua"], correct: 1 },
+        { q: "Câu 67: Chỉ tiêu chăm sóc bệnh nhân: Tỷ lệ % được ...... đầy đủ khi giao.", options: ["A. đóng gói", "B. dán nhãn", "C. kiểm tra", "D. hướng dẫn"], correct: 1 },
+        { q: "Câu 68: Chỉ tiêu hỗ trợ dịch vụ CSSK: Có danh mục thuốc ......, phác đồ điều trị, dược thư quốc gia về sử dụng thuốc.", options: ["A. thiết yếu", "B. đặc biệt", "C. đắt tiền", "D. mới"], correct: 0 },
+        { q: "Câu 69: Chỉ tiêu hỗ trợ về sử dụng thuốc: Tỷ lệ % bệnh nhân điều trị ...... dùng thuốc.", options: ["A. có", "B. không", "C. kết hợp", "D. thay thế"], correct: 1 },
+        { q: "Câu 70: Chỉ tiêu hỗ trợ về sử dụng thuốc: Giá tiền ...... một đơn thuốc.", options: ["A. tối đa", "B. tối thiểu", "C. trung bình", "D. cao nhất"], correct: 2 },
+        { q: "Câu 71: Chỉ tiêu hỗ trợ về sử dụng thuốc: Tỷ lệ % số bệnh nhân ...... với việc điều trị và sử dụng thuốc.", options: ["A. hài lòng", "B. thoả mãn", "C. đồng ý", "D. tuân thủ"], correct: 1 },
+        { q: "Câu 72: Chỉ tiêu hỗ trợ về sử dụng thuốc: Tỷ lệ % cơ sở y dược có thực hiện ...... cho bệnh nhân.", options: ["A. cấp phát thuốc", "B. thông tin thuốc", "C. tư vấn sức khỏe", "D. khám chữa bệnh"], correct: 1 },
+        { q: "Câu 73: Trong số các chỉ tiêu đánh giá nhanh về sử dụng thuốc hợp lý, an toàn, hiệu quả: Chỉ tiêu đánh giá sử dụng thuốc nào sau đây thuộc cùng nhóm với chỉ tiêu \"Tỷ lệ % cơ sở y dược có thực hiện thông tin thuốc cho bệnh nhân\"?", options: ["A. Tỷ lệ % được dán nhãn đầy đủ khi giao", "B. Giá tiền trung bình một đơn thuốc", "C. Có đủ, có sẵn thuốc thiết yếu", "D. Tỷ lệ % đơn thuốc có thuốc tiêm"], correct: 1 },
+        { q: "Câu 74: Trong số các chỉ tiêu đánh giá nhanh về sử dụng thuốc hợp lý, an toàn, hiệu quả: Chỉ tiêu đánh giá sử dụng thuốc nào sau đây thuộc cùng nhóm với chỉ tiêu \"Thời gian trung bình 1 lần khám bệnh (phút)\"?", options: ["A. Hướng dẫn cho người bệnh kiến thức về liều lượng cách dùng", "B. Tỷ lệ % bệnh nhân điều trị không dùng thuốc", "C. Tỷ lệ số đơn kê thuốc theo phác đồ điều trị chuẩn", "D. Số thuốc trung bình trong một đơn thuốc"], correct: 0 },
+        { q: "Câu 75: Trong các nhóm chỉ tiêu đánh giá sử dụng thuốc hợp lý, an toàn, hiệu quả, nhóm chỉ tiêu nào có số lượng chỉ tiêu nhiều nhất và cụ thể nhóm đó có mấy chỉ tiêu?", options: ["A. Nhóm chỉ tiêu chăm sóc bệnh nhân bao gồm 5 chỉ tiêu", "B. Nhóm chỉ tiêu hỗ trợ về sử dụng thuốc bao gồm 6 chỉ tiêu", "C. Nhóm chỉ tiêu hỗ trợ về sử dụng thuốc bao gồm 5 chỉ tiêu", "D. Nhóm chỉ tiêu chăm sóc bệnh nhân bao gồm 6 chỉ tiêu"], correct: 1 },
+
+        // PHẦN 7
+        { section: "PHẦN 7: TỔNG HỢP & LIÊN HỆ THỰC TẾ" },
+        { q: "Câu 76: Hiện nay, quan niệm về thuốc và cách sử dụng thuốc đã có nhiều tiến bộ, việc sử dụng thuốc hợp lý, an toàn, hiệu quả không chỉ là khẩu hiệu, mà còn là ...... cho thầy thuốc tuân thủ các phác đồ điều trị.", options: ["A. nguyên tắc", "B. kim chỉ nam", "C. quy định", "D. mục tiêu"], correct: 1 },
+        { q: "Câu 77: Thói quen dùng hay tin tưởng vào một số loại thuốc, dùng ...... vẫn còn gặp tại các cơ sở khám chữa bệnh trong và ngoài quân đội.", options: ["A. không đúng liều", "B. quá liều", "C. sai chỉ định", "D. không đúng bệnh"], correct: 0 },
+        { q: "Câu 78: Kịp thời thông báo, ...... những thuốc đã được khoa học chứng minh là kém tác dụng, gây nhiều phản ứng bất lợi cho người bệnh.", options: ["A. thu hồi", "B. loại bỏ", "C. đình chỉ", "D. thanh lý"], correct: 1 },
+        { q: "Câu 79: Muốn nâng cao chất lượng sử dụng thuốc, ngành Quân y phải phối hợp chặt chẽ với ......, xây dựng được các kênh thông tin tiếp nhận phản hồi ý kiến của thầy thuốc, của người bệnh.", options: ["A. Bộ Y tế", "B. Ngành Y tế", "C. Cục Quân y", "D. Bộ Quốc phòng"], correct: 1 },
+        { q: "Câu 80: Các tuyến quân y cần kịp thời thông báo đến các tuyến quân y những thông báo ......, đình chỉ các thuốc có tại cơ sở quân y đang sử dụng.", options: ["A. lỗi sản xuất", "B. thu hồi", "C. hết hạn", "D. thay đổi giá"], correct: 1 }
+    ];
+
+    let score = 0;
+    let answeredCount = 0;
+    const totalQuestions = questionsData.filter(item => item.q).length;
+
+    document.getElementById('total-questions').innerText = totalQuestions;
+
+    const quizContainer = document.getElementById('quiz-container');
+
+    // Render câu hỏi
+    questionsData.forEach((item, index) => {
+        if (item.section) {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'section-title';
+            sectionDiv.innerText = item.section;
+            quizContainer.appendChild(sectionDiv);
+        } else {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.innerText = item.q;
+            // Hỗ trợ xuống dòng cho các câu hỏi dài
+            qText.style.whiteSpace = 'pre-line';
+            card.appendChild(qText);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            item.options.forEach((optText, optIndex) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.innerText = optText;
+                
+                optDiv.onclick = function() {
+                    handleAnswer(this, optIndex, item.correct, optionsDiv);
+                };
+                
+                optionsDiv.appendChild(optDiv);
+            });
+
+            card.appendChild(optionsDiv);
+            quizContainer.appendChild(card);
+        }
+    });
+
+    function handleAnswer(selectedElement, selectedIndex, correctIndex, optionsContainer) {
+        // Nếu đã trả lời thì không làm gì cả
+        if (optionsContainer.classList.contains('answered')) return;
+        
+        // Đánh dấu là đã trả lời
+        optionsContainer.classList.add('answered');
+        answeredCount++;
+
+        const allOptions = optionsContainer.querySelectorAll('.option');
+
+        if (selectedIndex === correctIndex) {
+            // Đúng
+            selectedElement.classList.add('correct');
+            score++;
+            document.getElementById('score').innerText = score;
+        } else {
+            // Sai
+            selectedElement.classList.add('incorrect');
+            // Hiển thị đáp án đúng
+            allOptions[correctIndex].classList.add('correct');
+        }
+
+        // Vô hiệu hóa tất cả các lựa chọn
+        allOptions.forEach(opt => opt.classList.add('disabled'));
+    }
+
+    function showFinalResult() {
+        if (answeredCount < totalQuestions) {
+            const confirmFinish = confirm(`Bạn mới làm được ${answeredCount}/${totalQuestions} câu. Bạn có chắc chắn muốn xem kết quả không?`);
+            if (!confirmFinish) return;
+        }
+        
+        let message = `KẾT QUẢ CUỐI BÀI:\n\n`;
+        message += `Số câu đúng: ${score} / ${totalQuestions}\n`;
+        message += `Số câu sai/chưa làm: ${totalQuestions - score}\n`;
+        let percentage = (score / totalQuestions) * 100;
+        message += `Tỷ lệ: ${percentage.toFixed(2)}%\n\n`;
+
+        if (percentage >= 80) {
+            message += "Tuyệt vời! Bạn đã nắm rất vững kiến thức.";
+        } else if (percentage >= 50) {
+            message += "Khá tốt! Hãy ôn tập thêm các câu bị sai nhé.";
+        } else {
+            message += "Cần cố gắng hơn! Bạn nên đọc lại tài liệu bài giảng.";
+        }
+
+        alert(message);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
